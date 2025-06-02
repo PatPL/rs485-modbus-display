@@ -1,0 +1,163 @@
+#include "SPI.h"
+#include "src/FAST9488/FAST9488.h"
+#include "src/FAST9488/fonts/FreeSerif18pt7b.h"
+#include "src/FAST9488/fonts/FreeSans12pt7b.h"
+#include "src/FAST9488/util/TextUpdater.h"
+#include "src/util/ButtonHandler.h"
+#include "icons/output/icons.h"
+
+#define LED_R 3
+#define LED_Y 4
+#define OUT_1 6
+#define OUT_2 7
+#define OUT_3 8
+#define BUTTON_L A1
+#define BUTTON_M A2
+#define BUTTON_R A3
+
+// temporary
+uint16_t c = 0;
+TextUpdater* tu_counter = nullptr;
+
+FAST9488 ftft = FAST9488(
+    9,  // CS
+    10, // RESET
+    5  // DC/RS
+);
+
+void setup() {
+    // RS-485
+    Serial.begin(115200, SERIAL_8N1);
+    
+    // TFT
+    ftft.init();
+    ftft.setOrientation(RIBBON_BOTTOM);
+    ftft.fill(false, false, false);
+    
+    pinMode(LED_R, OUTPUT);
+    pinMode(LED_Y, OUTPUT);
+    pinMode(OUT_1, OUTPUT);
+    pinMode(OUT_2, OUTPUT);
+    pinMode(OUT_3, OUTPUT);
+    digitalWrite(LED_R, LOW);
+    digitalWrite(LED_Y, LOW);
+    digitalWrite(OUT_1, LOW);
+    digitalWrite(OUT_2, LOW);
+    digitalWrite(OUT_3, LOW);
+    
+    pinMode(BUTTON_L, INPUT);
+    pinMode(BUTTON_M, INPUT);
+    pinMode(BUTTON_R, INPUT);
+    
+    
+    
+    board_test();
+}
+
+void loop(void) {
+    delay(1000);
+}
+
+void board_test() {
+    
+    switch (2) {
+        case 1: {
+            ftft.fillRect(40, 40, 40 + 240, 40 + 60, true, true, false);
+            ftft.drawText(40, 40 + 60, ANCHOR_BOTTOMLEFT, "@WIWIyqp|[]()", { 255, 0, 0 }, &FreeSans12pt7b, 1);
+            ftft.drawText(40 + 240, 40, ANCHOR_TOPRIGHT, "@WIWIyqp|[]()", { 0, 64, 0 }, &FreeSerif18pt7b, 1);
+            ftft.fillRect(40, 40 + 80, 40 + 240, 40 + 80 + 60, true, true, true);
+            ftft.drawText(40, 40 + 80, ANCHOR_TOPLEFT, "@WIWIyqp|[]()", { 0, 0, 255 }, &FreeSans12pt7b, 1);
+            ftft.drawText(40 + 240, 40 + 80 + 60, ANCHOR_BOTTOMRIGHT, "@WIWIyqp|[]()", { 0, 0, 0 }, &FreeSerif18pt7b, 1);
+            ftft.fillRect(40, 40 + 160, 40 + 240, 40 + 160 + 60, false, true, true);
+            ftft.drawText(40 + 240, 40 + 160 + 60, ANCHOR_BOTTOMRIGHT, "@WIWIyqp|[]()", { 255, 0, 255 }, &FreeSans12pt7b, 1);
+            ftft.drawText(40, 40 + 160, ANCHOR_TOPLEFT, "@WIWIyqp|[]()", { 64, 64, 64 }, &FreeSerif18pt7b, 1);
+            ftft.fillRect(40, 40 + 240, 40 + 240, 40 + 240 + 60, true, true, true);
+            ftft.drawText(40 + 240, 40 + 240, ANCHOR_TOPRIGHT, "@WIWIyqp|[]()", { 0, 96, 64 }, &FreeSans12pt7b, 1);
+            ftft.drawText(40, 40 + 240 + 60, ANCHOR_BOTTOMLEFT, "@WIWIyqp|[]()", { 0, 96, 128 }, &FreeSerif18pt7b, 1);
+        } break; case 2: {
+            ftft.fillRect(16, 16, 16+80, 16+80, { 32, 32, 32 });
+            ftft.drawIcon(16, 16, ANCHOR_TOPLEFT, &icon_icontest);
+            ftft.drawIcon(16+80, 16, ANCHOR_TOPRIGHT, &icon_icontest);
+            ftft.drawIcon(16, 16+80, ANCHOR_BOTTOMLEFT, &icon_icontest);
+            ftft.drawIcon(16+80-32, 16+80-32, ANCHOR_TOPLEFT, &icon_icontest, 2);
+            
+            ftft.drawIcon(16+80-32+64+4, 16, ANCHOR_TOPLEFT, &icon_monotest, 1);
+            ftft.drawIcon(16+80-32+64+4+17+4, 16, ANCHOR_TOPLEFT, &icon_monotest, 2);
+            ftft.drawIcon(16+80-32+64+4+17+4+34+4, 16, ANCHOR_TOPLEFT, &icon_monotest, 3);
+            ftft.drawIcon(16+80-32+64+4+17+4+34+4+51+4, 16, ANCHOR_TOPLEFT, &icon_monotest, 4);
+            
+            ftft.drawIcon(16+80-32+64+4+17+4+34+4+51+4+68, 16+41*4+4, ANCHOR_TOPRIGHT, &icon_3bittest, 3);
+            
+            ftft.drawIcon(16, 16+80-32+64+8, ANCHOR_TOPLEFT, &icon_6bittest, 2);
+        }
+    }
+    
+    uint16_t t_o = ftft.drawText(16+80, 480-16-64, ANCHOR_BOTTOMLEFT, "counter: ", { 255, 255, 255 }, &FreeSerif18pt7b, 1);
+    
+    tu_counter = new TextUpdater(&ftft, 8, 16+80+t_o, 480-16-64, ANCHOR_BOTTOMLEFT, { 96, 96, 96 }, { 0, 0, 0 }, true, &FreeSans12pt7b, 2);
+    itoa(c, tu_counter->buf, 10);
+    tu_counter->update();
+    
+    ftft.fillRect(16, 480-16-64-80, 16+64, 480-16-80, {64, 64, 64});
+    ftft.fillRect(16+80, 480-16-64, 16+64+80, 480-16, {64, 64, 64});
+    ftft.fillRect(16, 480-16-64, 16+64, 480-16, {64, 64, 64});
+    
+    ButtonHandler leftButton = ButtonHandler(
+        BUTTON_L,
+        []{
+            digitalWrite(LED_R, HIGH);
+            
+            ftft.fillRect(16, 480-16-64, 16+64, 480-16, {255, 0, 0});
+            
+            --c;
+            itoa(c, tu_counter->buf, 10);
+            tu_counter->fg = { 224, 48, 32 };
+            tu_counter->update();
+        }, []{
+            digitalWrite(LED_R, LOW);
+            
+            ftft.fillRect(16, 480-16-64, 16+64, 480-16, {64, 64, 64});
+        }
+    );
+    ButtonHandler rightButton = ButtonHandler(
+        BUTTON_R,
+        []{
+            digitalWrite(LED_Y, HIGH);
+            
+            ftft.fillRect(16+80, 480-16-64, 16+64+80, 480-16, {255, 255, 0});
+            
+            ++c;
+            itoa(c, tu_counter->buf, 10);
+            tu_counter->fg = { 32, 192, 64 };
+            tu_counter->update();
+        }, []{
+            digitalWrite(LED_Y, LOW);
+            
+            ftft.fillRect(16+80, 480-16-64, 16+64+80, 480-16, {64, 64, 64});
+        }
+    );
+    ButtonHandler middleButton = ButtonHandler(
+        BUTTON_M,
+        []{
+            ftft.fillRect(16, 480-16-64-80, 16+64, 480-16-80, {0, 192, 0});
+            
+            c = 0;
+            itoa(c, tu_counter->buf, 10);
+            tu_counter->fg = { 64, 96, 255 };
+            tu_counter->update();
+        }, []{
+            ftft.fillRect(16, 480-16-64-80, 16+64, 480-16-80, {64, 64, 64});
+        }
+    );
+    
+    leftButton.init();
+    rightButton.init();
+    middleButton.init();
+    
+    while (true) {
+        leftButton.update();
+        rightButton.update();
+        middleButton.update();
+        delay(19); // 🙏
+    }
+}
