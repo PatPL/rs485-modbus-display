@@ -103,5 +103,5 @@ public:
     inline void drawPixel(uint16_t x, uint16_t y, Color color);
     
     uint16_t drawText(uint16_t _x, uint16_t _y, uint8_t anchor, const char* s, Color color, const GFXfont* font, uint8_t scale = 1);
-    void drawIcon(uint16_t _x, uint16_t _y, uint8_t anchor, PaletteMap* icon, uint8_t scale = 1);
+    void drawIcon(uint16_t _x, uint16_t _y, uint8_t anchor, const PaletteMap* icon, uint8_t scale = 1);
 };

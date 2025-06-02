@@ -9,7 +9,7 @@ TextUpdater::TextUpdater(
     Color _fg,
     Color bg,
     bool bulkClear,
-    GFXfont* font,
+    const GFXfont* font,
     uint8_t scale
 ) {
     _ftft = ftft;
@@ -19,7 +19,7 @@ TextUpdater::TextUpdater(
     fg = _fg;
     _bg = bg;
     _bulkClear = bulkClear;
-    _font = font;
+    _font = (GFXfont*)font;
     _scale = scale;
     
     buf = new char[bufLen];

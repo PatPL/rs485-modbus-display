@@ -33,7 +33,7 @@ public:
         Color _fg,
         Color bg,
         bool bulkClear,
-        GFXfont* font,
+        const GFXfont* font,
         uint8_t scale = 1
     );
     

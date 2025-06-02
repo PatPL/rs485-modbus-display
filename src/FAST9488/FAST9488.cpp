@@ -320,7 +320,7 @@ uint16_t FAST9488::drawText(uint16_t _x, uint16_t _y, uint8_t anchor, const char
     
     if (anchor & ANCHOR_LEFT) {
         // anchor left
-        ci = _s;
+        ci = (unsigned char*)_s;
         while (*ci) {
             cig = font->glyph + *ci - charStartOffset;
             drawChar(x, y, font->bitmap, cig, color, scale);
@@ -331,7 +331,7 @@ uint16_t FAST9488::drawText(uint16_t _x, uint16_t _y, uint8_t anchor, const char
         // anchor right
         // reverse the string
         uint8_t length = strlen(_s);
-        unsigned char* _rs = new char[length + 1];
+        unsigned char* _rs = new unsigned char[length + 1];
         for (uint8_t i = 0; i < length; ++i) {
             _rs[i] = _s[length - i - 1];
         }
@@ -353,7 +353,7 @@ uint16_t FAST9488::drawText(uint16_t _x, uint16_t _y, uint8_t anchor, const char
 }
 
 // Pallet clone version
-void FAST9488::drawIcon(uint16_t _x, uint16_t _y, uint8_t anchor, PaletteMap* icon, uint8_t scale) {
+void FAST9488::drawIcon(uint16_t _x, uint16_t _y, uint8_t anchor, const PaletteMap* icon, uint8_t scale) {
     bool keepSPI = startSPI();
     // Icon data is laid out from top-left
     uint16_t x = _x - (anchor & ANCHOR_RIGHT ? icon->width * scale : 0);

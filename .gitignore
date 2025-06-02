@@ -1,4 +1,5 @@
 .theia
+.vscode
 build
 icons/bin
 icons/obj
