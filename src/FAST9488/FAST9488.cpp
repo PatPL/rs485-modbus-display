@@ -227,6 +227,10 @@ void FAST9488::fill(bool r, bool g, bool b) {
 
 // <x0, x1) <y0, y1)
 void FAST9488::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, Color color) {
+    // todo: check performance impact
+    if (x0 > x1) return fillRect(x1, y0, x0, y1, color);
+    if (y0 > y1) return fillRect(x0, y1, x1, y0, color);
+    
     bool keepSPI = startSPI();
     
     setBufferBounds(x0, y0, x1 - 1, y1 - 1);
@@ -237,6 +241,10 @@ void FAST9488::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, Colo
 
 // <x0, x1) <y0, y1)
 void FAST9488::fillRect(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, bool r, bool g, bool b) {
+    // todo: check performance impact
+    if (x0 > x1) return fillRect(x1, y0, x0, y1, r, g, b);
+    if (y0 > y1) return fillRect(x0, y1, x1, y0, r, g, b);
+    
     bool keepSPI = startSPI();
     
     setColorMode(true);

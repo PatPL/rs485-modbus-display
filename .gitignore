@@ -3,3 +3,4 @@
 build
 icons/bin
 icons/obj
+*~lock*.ods*

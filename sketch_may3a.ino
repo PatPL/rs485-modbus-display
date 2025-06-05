@@ -4,6 +4,7 @@
 #include "src/FAST9488/fonts/FreeSans12pt7b.h"
 #include "src/FAST9488/util/TextUpdater.h"
 #include "src/util/ButtonHandler.h"
+#include "src/FAST9488/util/ArrowManager.h"
 #include "icons/output/icons.h"
 
 #define LED_R 3
@@ -49,13 +50,330 @@ void setup() {
     pinMode(BUTTON_M, INPUT);
     pinMode(BUTTON_R, INPUT);
     
+    arrow_test();
     
-    
-    board_test();
+    // board_test();
 }
 
 void loop(void) {
     delay(1000);
+}
+
+ArrowManager ar1 = ArrowManager(
+    &ftft,
+    119,
+    140,
+    50,
+    80,
+    false,
+    1,
+    { 255, 32, 0 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar2 = ArrowManager(
+    &ftft,
+    140,
+    119,
+    80,
+    50,
+    true,
+    2,
+    { 255, 0, 64 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar3 = ArrowManager(
+    &ftft,
+    180,
+    119,
+    239,
+    50,
+    true,
+    3,
+    { 128, 255, 64 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar4 = ArrowManager(
+    &ftft,
+    200,
+    140,
+    270,
+    80,
+    false,
+    4,
+    { 0, 255, 192 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar5 = ArrowManager(
+    &ftft,
+    200,
+    180,
+    270,
+    239,
+    true,
+    5,
+    { 32, 192, 255 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar6 = ArrowManager(
+    &ftft,
+    180,
+    200,
+    239,
+    270,
+    false,
+    6,
+    { 128, 128, 255 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar7 = ArrowManager(
+    &ftft,
+    140,
+    200,
+    80,
+    270,
+    false,
+    7,
+    { 255, 224, 128 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar8 = ArrowManager(
+    &ftft,
+    119,
+    180,
+    50,
+    239,
+    true,
+    8,
+    { 128, 32, 192 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar11 = ArrowManager(
+    &ftft,
+    80,
+    30,
+    239,
+    30,
+    false,
+    8,
+    { 255, 0, 0 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar12 = ArrowManager(
+    &ftft,
+    290,
+    80,
+    290,
+    239,
+    false,
+    8,
+    { 32, 255, 32 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar13 = ArrowManager(
+    &ftft,
+    239,
+    290,
+    80,
+    290,
+    false,
+    8,
+    { 32, 64, 255 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar14 = ArrowManager(
+    &ftft,
+    30,
+    239,
+    30,
+    80,
+    false,
+    8,
+    { 128, 128, 128 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar21 = ArrowManager(
+    &ftft,
+    20,
+    350,
+    300,
+    350,
+    false,
+    7,
+    { 0, 0, 0 },
+    { 255, 255, 255 }
+);
+
+ArrowManager ar22 = ArrowManager(
+    &ftft,
+    300,
+    390,
+    20,
+    390,
+    false,
+    13,
+    { 255, 128, 0 },
+    { 255, 255, 255 }
+);
+
+void arrow_test() {
+    ftft.fill(true, true, true);
+    
+    ftft.fillRect(20, 20, 20+60, 20+60, { 32, 32, 32 });
+    ftft.fillRect(320-20-60, 20, 320-20, 20+60, { 64, 32, 32 });
+    ftft.fillRect(20, 320-20-60, 20+60, 320-20, { 32, 64, 32 });
+    ftft.fillRect(320-20-60, 320-20-60, 320-20, 320-20, { 32, 32, 64 });
+    
+    ftft.fillRect(120, 120, 200, 200, { 64, 64, 64 });
+    
+    ar1.update();
+    ar2.update();
+    ar3.update();
+    ar4.update();
+    ar5.update();
+    ar6.update();
+    ar7.update();
+    ar8.update();
+    Serial.println("START");
+    ar11.update();
+    Serial.println("END");
+    ar12.update();
+    ar13.update();
+    ar14.update();
+    ar21.update();
+    ar22.update();
+    
+    tu_counter = new TextUpdater(&ftft, 64, 4, 330, ANCHOR_BOTTOMLEFT, { 0, 0, 0 }, { 255, 255, 255 }, true, &FreeSans12pt7b, 1);
+    snprintf(tu_counter->buf, 64, "%d,%d>%d,%d|%d,%d>%d,%d", ar21._x0, ar21._y0, ar21._x1, ar21._y1, ar22._x0, ar22._y0, ar22._x1, ar22._y1);
+    // tu_counter->update();
+    
+    ButtonHandler leftButton = ButtonHandler(
+        BUTTON_L,
+        []{
+            ar21.move(random(15+40, 305-40), random(0, 110) + 320, random(15+40, 305-40), random(0, 110) + 320);
+            ar22.move(random(15+40, 305-40), random(0, 110) + 320, random(15+40, 305-40), random(0, 110) + 320, random(1,33));
+            ar22.fg = { (uint8_t) random(0, 255), (uint8_t) random(0, 255), (uint8_t) random(0, 255) };
+            
+            ar21.clear();
+            ar22.clear();
+            
+            snprintf(tu_counter->buf, 64, "%d,%d>%d,%d|%d,%d>%d,%d", ar21._x0, ar21._y0, ar21._x1, ar21._y1, ar22._x0, ar22._y0, ar22._x1, ar22._y1);
+            // tu_counter->update();
+            
+            ar21.update();
+            ar22.update();
+        }, nullptr
+    );
+    ButtonHandler rightButton = ButtonHandler(
+        BUTTON_R,
+        []{
+            ar1.reverseDirection = !ar1.reverseDirection;
+            ar2.reverseDirection = !ar2.reverseDirection;
+            ar3.reverseDirection = !ar3.reverseDirection;
+            ar4.reverseDirection = !ar4.reverseDirection;
+            ar5.reverseDirection = !ar5.reverseDirection;
+            ar6.reverseDirection = !ar6.reverseDirection;
+            ar7.reverseDirection = !ar7.reverseDirection;
+            ar8.reverseDirection = !ar8.reverseDirection;
+            ar11.reverseDirection = !ar11.reverseDirection;
+            ar12.reverseDirection = !ar12.reverseDirection;
+            ar13.reverseDirection = !ar13.reverseDirection;
+            ar14.reverseDirection = !ar14.reverseDirection;
+            ar21.reverseDirection = !ar21.reverseDirection;
+            ar22.reverseDirection = !ar22.reverseDirection;
+            
+            ar1.update();
+            ar2.update();
+            ar3.update();
+            ar4.update();
+            ar5.update();
+            ar6.update();
+            ar7.update();
+            ar8.update();
+            ar11.update();
+            ar12.update();
+            ar13.update();
+            ar14.update();
+            ar21.update();
+            ar22.update();
+        }, nullptr
+    );
+    ButtonHandler middleButton = ButtonHandler(
+        BUTTON_M,
+        []{
+            ar1.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar2.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar3.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar4.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar5.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar6.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar7.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar8.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar11.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar12.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar13.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar14.fg = { (uint8_t)random(0, 256), (uint8_t)random(0, 256), (uint8_t)random(0, 256) };
+            ar1.reverseDirection = (bool) random(0, 2);
+            ar2.reverseDirection = (bool) random(0, 2);
+            ar3.reverseDirection = (bool) random(0, 2);
+            ar4.reverseDirection = (bool) random(0, 2);
+            ar5.reverseDirection = (bool) random(0, 2);
+            ar6.reverseDirection = (bool) random(0, 2);
+            ar7.reverseDirection = (bool) random(0, 2);
+            ar8.reverseDirection = (bool) random(0, 2);
+            ar11.reverseDirection = (bool) random(0, 2);
+            ar12.reverseDirection = (bool) random(0, 2);
+            ar13.reverseDirection = (bool) random(0, 2);
+            ar14.reverseDirection = (bool) random(0, 2);
+            
+            ar21.move(random(15+40, 305-40), random(0, 110) + 320, random(15+40, 305-40), random(0, 110) + 320);
+            ar22.move(random(15+40, 305-40), random(0, 110) + 320, random(15+40, 305-40), random(0, 110) + 320, random(1,33));
+            ar22.fg = { (uint8_t) random(0, 255), (uint8_t) random(0, 255), (uint8_t) random(0, 255) };
+            
+            ar21.clear();
+            ar22.clear();
+            
+            snprintf(tu_counter->buf, 64, "%d,%d>%d,%d|%d,%d>%d,%d", ar21._x0, ar21._y0, ar21._x1, ar21._y1, ar22._x0, ar22._y0, ar22._x1, ar22._y1);
+            // tu_counter->update();
+            
+            ar1.update();
+            ar2.update();
+            ar3.update();
+            ar4.update();
+            ar5.update();
+            ar6.update();
+            ar7.update();
+            ar8.update();
+            ar11.update();
+            ar12.update();
+            ar13.update();
+            ar14.update();
+            ar21.update();
+            ar22.update();
+        }, nullptr
+    );
+    
+    leftButton.init();
+    rightButton.init();
+    middleButton.init();
+    
+    while (true) {
+        leftButton.update();
+        rightButton.update();
+        middleButton.update();
+        delay(1);
+    }
 }
 
 void board_test() {
